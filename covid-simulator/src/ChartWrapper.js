@@ -1,56 +1,105 @@
 import React, { useRef, useEffect } from 'react'
 
 import Chart from 'chart.js'
+import Animate from "./Animate"
+
+function randomScalingFactor() {
+    return Math.random();
+};
+
 
 export default props => {
     const containerRef = useRef(null)
 
     const { ...rest } = props
 
+    var data1 = [
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor()
+    ];
+
+    var data2 = [
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor()
+    ];
+
+    var data3 = [
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor(),
+        randomScalingFactor()
+    ];
+
     useEffect(() => {
         var ctx = containerRef.current;
-        var myChart = new Chart(ctx, {
-            type: 'bar',
+        var config = {
+            type: 'line',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'],
                 datasets: [{
-                    label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
+                    label: 'Unfilled',
+                    fill: false,
+                    data: data1,
+                }, {
+                    label: 'Dashed',
+                    fill: false,
+                    borderDash: [5, 5],
+                    data: data2,
+                }, {
+                    label: 'Filled',
+                    data: data3,
+                    fill: true,
                 }]
             },
             options: {
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'R0'
+                },
                 scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Month'
+                        }
+                    }],
                     yAxes: [{
-                        ticks: {
-                            beginAtZero: true
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
                         }
                     }]
                 }
             }
-        });
+        };
+        var myChart = new Chart(ctx, config);
 
-        /*
-        return Animate(60, (time, frameId) => {
-            context.translate(-frameId, 0);
-        }).start().stop
-        */
+
+        var animation = new Animate(1, (time, frameId) => {
+            myChart.data.datasets.forEach((dataset) => {
+                dataset.data.push(1.);
+            });
+            myChart.update();
+        })
+
+        return animation.start().stop
+
     })
 
 
