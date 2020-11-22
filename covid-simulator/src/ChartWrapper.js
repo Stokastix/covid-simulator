@@ -43,24 +43,29 @@ export default props => {
         randomScalingFactor()
     ];
 
+
+    Date.prototype.addDays = function (days) {
+        var date = new Date(this.valueOf());
+        date.setDate(date.getDate() + days);
+        return date;
+    }
+
+    var date = new Date();
+
+    var data4 = [{
+        t: date.addDays(0),
+        y: randomScalingFactor()
+    }];
+
     useEffect(() => {
         var ctx = containerRef.current;
         var config = {
             type: 'line',
             data: {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'],
+                //labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'],
                 datasets: [{
-                    label: 'Unfilled',
-                    fill: false,
-                    data: data1,
-                }, {
-                    label: 'Dashed',
-                    fill: false,
-                    borderDash: [5, 5],
-                    data: data2,
-                }, {
                     label: 'Filled',
-                    data: data3,
+                    data: data4,
                     fill: true,
                 }]
             },
@@ -73,10 +78,7 @@ export default props => {
                 scales: {
                     xAxes: [{
                         display: true,
-                        scaleLabel: {
-                            display: true,
-                            labelString: 'Month'
-                        }
+                        type: 'time',
                     }],
                     yAxes: [{
                         display: true,
@@ -91,9 +93,12 @@ export default props => {
         var myChart = new Chart(ctx, config);
 
 
-        var animation = new Animate(1, (time, frameId) => {
+        var animation = new Animate(1, params => {
             myChart.data.datasets.forEach((dataset) => {
-                dataset.data.push(1.);
+                dataset.data.push({
+                    t: date.addDays(params.frameId),
+                    y: randomScalingFactor()
+                });
             });
             myChart.update();
         })
