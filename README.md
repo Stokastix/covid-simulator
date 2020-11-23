@@ -6,7 +6,7 @@ setup the project:
 
 `cd covid-simulator`
 
-`docker-compose up package_install`
+`docker-compose up install_package`
 
 
 run the project:
