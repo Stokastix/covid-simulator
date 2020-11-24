@@ -1,68 +1,33 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 import Chart from 'chart.js'
 import Animate from "./Animate"
-
-function randomScalingFactor() {
-    return Math.random();
-};
 
 
 export default props => {
     const containerRef = useRef(null)
 
-    const { ...rest } = props
+    const { data, ...rest } = props
 
-    var data1 = [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor()
-    ];
-
-    var data2 = [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor()
-    ];
-
-    var data3 = [
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor(),
-        randomScalingFactor()
-    ];
-
-
-    Date.prototype.addDays = function (days) {
-        var date = new Date(this.valueOf());
-        date.setDate(date.getDate() + days);
-        return date;
-    }
+    const [chart, setChart] = useState();
 
     var date = new Date();
 
-    var data4 = [{
-        t: date.addDays(0),
-        y: randomScalingFactor()
-    }];
+    var data4 = [];
+
+
+    useEffect(() => {
+        if (chart) {
+            chart.data.datasets[0].data = data;
+            chart.update();
+        }
+    }, [data]);
 
     useEffect(() => {
         var ctx = containerRef.current;
         var config = {
             type: 'line',
             data: {
-                //labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'],
                 datasets: [{
                     label: 'Filled',
                     data: data4,
@@ -73,7 +38,7 @@ export default props => {
                 responsive: true,
                 title: {
                     display: true,
-                    text: 'R0'
+                    text: 'Infected'
                 },
                 scales: {
                     xAxes: [{
@@ -92,21 +57,22 @@ export default props => {
         };
         var myChart = new Chart(ctx, config);
 
+        setChart(myChart);
 
+        /*
         var animation = new Animate(0.01, params => {
             myChart.data.datasets.forEach((dataset) => {
                 dataset.data.push({
                     t: date.addDays(params.frameId),
-                    y: randomScalingFactor()
+                    y: Math.random()
                 });
             });
             myChart.update();
         })
 
         return animation.start().stop
-
-    })
-
+        */
+    }, [])
 
     return <canvas ref={containerRef} {...rest} width={100} height={50} />
 }

@@ -1,6 +1,13 @@
 import nj from "numjs";
 
 
+Date.prototype.addDays = function (days) {
+    var date = new Date(this.valueOf());
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+const date = new Date("2020-01-01");
 
 function initWorker() {
 
@@ -63,17 +70,16 @@ function initWorker() {
 
     this.get = () => {
         const t0 = Math.max(0, t - 1);
-        return { "day": t0 / dt, "I": I.get(t0) };
+        return { "t": date.addDays(t0 * dt), "I": I.get(t0) };
     }
 }
 
 
 var worker = new initWorker();
 worker.start();
-console.log(worker.get())
 
-var onmessage = async ($event) => {
-    if ($event && $event.data && $event.data.msg === 'getdata') {
+onmessage = async ($event) => {
+    if ($event && $event.data === 'getdata') {
         postMessage(worker.get());
     };
 };
