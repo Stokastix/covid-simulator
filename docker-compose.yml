@@ -1,7 +1,7 @@
 version: '3'
 services:
   install_package:
-    image: "node"
+    image: "node:10.23"
     user: "node"
     working_dir: /home/node/app
     environment:
@@ -11,7 +11,7 @@ services:
     command: "npm install"
 
   start:
-    image: "node"
+    image: "node:10.23"
     user: "node"
     working_dir: /home/node/app
     environment:

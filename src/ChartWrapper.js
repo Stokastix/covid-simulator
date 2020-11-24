@@ -93,7 +93,7 @@ export default props => {
         var myChart = new Chart(ctx, config);
 
 
-        var animation = new Animate(1, params => {
+        var animation = new Animate(0.01, params => {
             myChart.data.datasets.forEach((dataset) => {
                 dataset.data.push({
                     t: date.addDays(params.frameId),
