@@ -54,7 +54,7 @@ export default class Dashboard extends React.Component {
                     </Grid>
 
 
-                    {[0, 1, 2].map((value) => (
+                    {[0].map((value) => (
                         <Grid key={value} item>
                             <Paper>
                                 <ChartWrapper />

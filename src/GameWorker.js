@@ -51,20 +51,29 @@ function initWorker() {
 
             GDP.set(t, GDP.get(t - 1) + dt * alpha(R0.get(t)) * (S.get(t) + R.get(t)))
 
-            console.log("test", I.get(t));
+            //console.log("test", I.get(t));
             t += 1
         }
     }
 
-    setInterval(gameLoop, 1000);
+    this.start = () => {
+        console.log("start");
+        setInterval(gameLoop, 1000 * dt); // one day is one second
+    }
+
+    this.get = () => {
+        const t0 = Math.max(0, t - 1);
+        return { "day": t0 / dt, "I": I.get(t0) };
+    }
 }
 
 
-initWorker();
-
+var worker = new initWorker();
+worker.start();
+console.log(worker.get())
 
 var onmessage = async ($event) => {
-    if ($event && $event.data && $event.data.msg === 'whatever') {
-        postMessage("whatever");
+    if ($event && $event.data && $event.data.msg === 'getdata') {
+        postMessage(worker.get());
     };
 };
