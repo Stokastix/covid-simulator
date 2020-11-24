@@ -41,8 +41,14 @@ function valuetext(value) {
 }
 
 
-export default function R0Slider() {
+export default (props) => {
     const classes = useStyles();
+
+    const { setR0, ...rest } = props
+
+    const handleSliderChange = (event, newValue) => {
+        setR0(newValue);
+    };
 
     return (
         <Paper>
@@ -58,6 +64,7 @@ export default function R0Slider() {
                     aria-labelledby="discrete-slider-always"
                     step={0.1}
                     marks={marks}
+                    onChange={handleSliderChange}
                     valueLabelDisplay="on"
                 />
             </div></Paper>

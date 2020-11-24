@@ -58,8 +58,6 @@ function initWorker() {
             D.set(t, D.get(t - 1) + dr * dt * tmp2)
 
             GDP.set(t, GDP.get(t - 1) + dt * alpha(R0.get(t)) * (S.get(t) + R.get(t)))
-
-            //console.log("test", I.get(t));
             t += 1
         }
     }
@@ -77,6 +75,12 @@ function initWorker() {
             "GDP": (GDP.get(t0) - GDP_baseline.get(t0)) / GDP_baseline.get(t0)
         };
     }
+
+    this.setR0 = (v) => {
+        for (var i = t; i < TIME_STEPS.get(-1); i++) {
+            R0.set(i, v)
+        }
+    }
 }
 
 
@@ -84,7 +88,12 @@ var worker = new initWorker();
 worker.start();
 
 onmessage = async ($event) => {
-    if ($event && $event.data === 'getdata') {
-        postMessage(worker.get());
-    };
+    if ($event) {
+        if ($event.data === 'getdata') {
+            postMessage(worker.get());
+        } else if ($event.data.msg && $event.data.msg === 'setR0') {
+            worker.setR0($event.data.R0);
+        }
+    }
+
 };

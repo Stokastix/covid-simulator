@@ -20,14 +20,19 @@ import Animate from "./Animate"
 
 
 export default (props) => {
-    let gameWorker
-
     const [data, setData] = useState([]);
     const [data_GDP, setData_GDP] = useState([]);
 
+    const [R0, setR0] = useState(3.);
+    const [gameWorkerRef, setGameWorkerRef] = useState();
+
+
     useEffect(() => {
-        gameWorker = new GameWorker();
+        let gameWorker = (new GameWorker());
+        setGameWorkerRef(gameWorker);
         var date = new Date();
+
+        console.log(">>>", gameWorker);
 
         gameWorker.onmessage = (event) => {
             const t = event.data.t;
@@ -51,6 +56,14 @@ export default (props) => {
 
         return animation.start().stop
     }, []);
+
+
+    useEffect(() => {
+        console.log("Set R0", R0);
+        if (gameWorkerRef) {
+            gameWorkerRef.postMessage({ "R0": R0, "msg": "setR0" })
+        }
+    }, [R0]);
 
     return (
         <Container maxWidth="sm">
@@ -85,7 +98,7 @@ export default (props) => {
                 </Grid>
                 <Grid item>
 
-                    <R0Slider />
+                    <R0Slider setR0={setR0} />
                 </Grid>
             </Grid>
         </Container >
