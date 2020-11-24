@@ -59,7 +59,6 @@ export default (props) => {
 
 
     useEffect(() => {
-        console.log("Set R0", R0);
         if (gameWorkerRef) {
             gameWorkerRef.postMessage({ "R0": R0, "msg": "setR0" })
         }
