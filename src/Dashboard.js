@@ -22,6 +22,8 @@ import Animate from "./Animate"
 export default (props) => {
     const [data, setData] = useState([]);
     const [data_GDP, setData_GDP] = useState([]);
+    const [death, setDeath] = useState(0);
+    const [gdp, setGDP] = useState(0);
 
     const [R0, setR0] = useState(3.);
     const [gameWorkerRef, setGameWorkerRef] = useState();
@@ -38,6 +40,8 @@ export default (props) => {
             const t = event.data.t;
             const I = event.data.I;
             const GDP = event.data.GDP;
+            setDeath(Math.floor(event.data.D));
+            setGDP(GDP);
 
             setData(oldData => [...oldData, {
                 t: t,
@@ -76,12 +80,12 @@ export default (props) => {
                         alignItems="stretch">
                         <Grid item>
                             <Paper>
-                                GDP: -10%
+                                GDP: {Math.round(100 * gdp, 2)}%
                             </Paper>
                         </Grid>
                         <Grid item>
                             <Paper>
-                                Death Toll: 57K
+                                Death Toll: {death}
                             </Paper>
                         </Grid>
                     </Grid>

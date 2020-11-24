@@ -29,7 +29,7 @@ function initWorker() {
     const death_ratio_overloaded = 0.03
 
     const gamma = 1 / (13.)
-    const alpha = (r) => { return r + 20. };
+    const alpha = (r) => { return r + 20.; };
 
     var R0 = nj.ones(N_STEPS).multiply(3)
 
@@ -41,7 +41,7 @@ function initWorker() {
 
     var t = 1
 
-    const GDP_baseline = TIME_SPACE.multiply(N * alpha(R0[0]));
+    const GDP_baseline = TIME_SPACE.multiply(alpha(R0.get(0)));
 
     function gameLoop() {
         if (t < TIME_STEPS.get(-1)) {
@@ -57,7 +57,7 @@ function initWorker() {
             R.set(t, R.get(t - 1) + (1 - dr) * dt * tmp2)
             D.set(t, D.get(t - 1) + dr * dt * tmp2)
 
-            GDP.set(t, GDP.get(t - 1) + dt * alpha(R0.get(t)) * (S.get(t) + R.get(t)))
+            GDP.set(t, GDP.get(t - 1) + dt * alpha(R0.get(t)) * ((S.get(t) + R.get(t)) / N))
             t += 1
         }
     }
@@ -71,7 +71,10 @@ function initWorker() {
         const t0 = Math.max(0, t - 1);
         return {
             "t": date.addDays(t0 * dt),
+            "S": S.get(t0),
             "I": I.get(t0),
+            "R": R.get(t0),
+            "D": D.get(t0),
             "GDP": (GDP.get(t0) - GDP_baseline.get(t0)) / GDP_baseline.get(t0)
         };
     }
