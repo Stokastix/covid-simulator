@@ -41,6 +41,7 @@ function initWorker() {
 
     var t = 1
 
+    const GDP_baseline = TIME_SPACE.multiply(N * alpha(R0[0]));
 
     function gameLoop() {
         if (t < TIME_STEPS.get(-1)) {
@@ -70,7 +71,11 @@ function initWorker() {
 
     this.get = () => {
         const t0 = Math.max(0, t - 1);
-        return { "t": date.addDays(t0 * dt), "I": I.get(t0) };
+        return {
+            "t": date.addDays(t0 * dt),
+            "I": I.get(t0),
+            "GDP": (GDP.get(t0) - GDP_baseline.get(t0)) / GDP_baseline.get(t0)
+        };
     }
 }
 

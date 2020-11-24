@@ -21,7 +21,9 @@ import Animate from "./Animate"
 
 export default (props) => {
     let gameWorker
+
     const [data, setData] = useState([]);
+    const [data_GDP, setData_GDP] = useState([]);
 
     useEffect(() => {
         gameWorker = new GameWorker();
@@ -29,11 +31,17 @@ export default (props) => {
 
         gameWorker.onmessage = (event) => {
             const t = event.data.t;
-            const y = event.data.I;
+            const I = event.data.I;
+            const GDP = event.data.GDP;
 
             setData(oldData => [...oldData, {
                 t: t,
-                y: y
+                y: I
+            }]);
+
+            setData_GDP(oldData => [...oldData, {
+                t: t,
+                y: GDP
             }]);
         };
 
@@ -69,7 +77,10 @@ export default (props) => {
 
                 <Grid item>
                     <Paper>
-                        <ChartWrapper data={data} />
+                        <ChartWrapper data={data} name={"Infected"} />
+                    </Paper>
+                    <Paper>
+                        <ChartWrapper data={data_GDP} name={"GDP"} />
                     </Paper>
                 </Grid>
                 <Grid item>

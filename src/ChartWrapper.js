@@ -7,13 +7,11 @@ import Animate from "./Animate"
 export default props => {
     const containerRef = useRef(null)
 
-    const { data, ...rest } = props
+    const { name, data, ...rest } = props
 
     const [chart, setChart] = useState();
 
     var date = new Date();
-
-    var data4 = [];
 
 
     useEffect(() => {
@@ -30,7 +28,7 @@ export default props => {
             data: {
                 datasets: [{
                     label: 'Filled',
-                    data: data4,
+                    data: [],
                     fill: true,
                 }]
             },
@@ -38,7 +36,7 @@ export default props => {
                 responsive: true,
                 title: {
                     display: true,
-                    text: 'Infected'
+                    text: name
                 },
                 scales: {
                     xAxes: [{
