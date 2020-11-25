@@ -11,7 +11,11 @@ export default props => {
 
     useEffect(() => {
         if (chart) {
-            chart.update();
+            chart.update({
+                duration: 500,
+                lazy: true,
+                //easing: 'easeInOutSine'
+            });
         }
     }, [config]);
 

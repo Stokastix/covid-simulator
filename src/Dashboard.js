@@ -21,6 +21,20 @@ import { useRef, useEffect } from 'react'
 import Animate from "./Animate"
 
 import DashboardViews from "./DashboardViews"
+import MobileStepper from '@material-ui/core/MobileStepper';
+import Button from '@material-ui/core/Button';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+
+import { useTheme } from '@material-ui/core/styles';
+
+
+const useStyles = makeStyles({
+    root: {
+        maxWidth: 400,
+        flexGrow: 1,
+    },
+});
 
 export default (props) => {
     const [death, setDeath] = useState(0);
@@ -72,6 +86,21 @@ export default (props) => {
         }
     }, [R0]);
 
+
+
+    const classes = useStyles();
+    const theme = useTheme();
+
+    const [activeStep, setActiveStep] = React.useState(0);
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
     return (
         <Container maxWidth="sm">
             <Grid container direction="column"
@@ -102,6 +131,24 @@ export default (props) => {
                 </Grid>
                 <Grid item>
                     <Paper>
+                        <MobileStepper
+                            variant="dots"
+                            steps={6}
+                            position="static"
+                            activeStep={activeStep}
+                            nextButton={
+                                <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
+                                    Next
+                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                                Back
+                                </Button>
+                            }
+                        />
                         <ChartWrapper config={IGraphCfg} width={100} height={50} />
                     </Paper>
                 </Grid>
@@ -121,4 +168,4 @@ export default (props) => {
             </Grid>
         </Container >
     );
-}  
+}   

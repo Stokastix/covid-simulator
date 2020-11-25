@@ -3,7 +3,8 @@ import nj from "numjs";
 
 Date.prototype.addDays = function (days) {
     var date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
+    var t = date.getTime();
+    date.setTime(Math.floor(t + days * 24 * 60 * 60 * 1000));
     return date;
 }
 
