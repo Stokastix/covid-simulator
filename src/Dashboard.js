@@ -109,19 +109,21 @@ export default (props) => {
                 spacing={3}
             >
                 <Grid item xs={12}>
-                    <Grid container justify="center" spacing={2}
-                        alignItems="stretch">
-                        <Grid item>
-                            <Paper>
-                                GDP: {Math.round(100 * gdp, 2)}%
+                    <Paper>
+                        <Grid container justify="center" spacing={2}
+                            alignItems="stretch">
+                            <Grid item>
+                                <Paper>
+                                    GDP: {Math.round(100 * gdp, 2)}%
                             </Paper>
+                            </Grid>
+                            <Grid item>
+                                <Paper>
+                                    Death Toll: {death}
+                                </Paper>
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <Paper>
-                                Death Toll: {death}
-                            </Paper>
-                        </Grid>
-                    </Grid>
+                    </Paper>
                 </Grid>
 
                 <Grid item>
