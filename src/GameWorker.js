@@ -71,9 +71,11 @@ function initWorker() {
         const t0 = Math.max(0, t - 1);
         return {
             "t": date.addDays(t0 * dt),
+            "progress": t0 / TIME_STEPS.get(-1),
             "S": S.get(t0),
             "I": I.get(t0),
             "R": R.get(t0),
+            "R0": R0.get(t0),
             "D": D.get(t0),
             "GDP": (GDP.get(t0) - GDP_baseline.get(t0)) / GDP_baseline.get(t0)
         };

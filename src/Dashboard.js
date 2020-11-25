@@ -9,6 +9,8 @@ import Paper from '@material-ui/core/Paper';
 import ChartWrapper from "./ChartWrapper";
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 import R0Slider from "./R0Slider";
 import { useState } from 'react'
 
@@ -18,40 +20,42 @@ import GameWorker from 'worker-loader!./GameWorker.js';
 import { useRef, useEffect } from 'react'
 import Animate from "./Animate"
 
+import DashboardViews from "./DashboardViews"
 
 export default (props) => {
-    const [data, setData] = useState([]);
-    const [data_GDP, setData_GDP] = useState([]);
     const [death, setDeath] = useState(0);
     const [gdp, setGDP] = useState(0);
 
     const [R0, setR0] = useState(3.);
     const [gameWorkerRef, setGameWorkerRef] = useState();
+    const [progressRate, setProgressRate] = useState(0.);
 
+    function appendData(old_cfg, set_cfg, p) {
+        var cfg = { ...old_cfg };
+        cfg.data.datasets[0].data.push(p);
+        set_cfg(cfg);
+    }
+
+    const [IGraphCfg, setIGraphCfg] = useState(DashboardViews.infected_cfg);
+    const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardViews.gdp_cfg);
+    const [R0GraphCfg, setR0GraphCfg] = useState(DashboardViews.r0_cfg);
 
     useEffect(() => {
         let gameWorker = (new GameWorker());
         setGameWorkerRef(gameWorker);
-        var date = new Date();
-
-        console.log(">>>", gameWorker);
 
         gameWorker.onmessage = (event) => {
             const t = event.data.t;
             const I = event.data.I;
             const GDP = event.data.GDP;
+            const R0 = event.data.R0;
             setDeath(Math.floor(event.data.D));
+            setProgressRate(100 * event.data.progress);
             setGDP(GDP);
 
-            setData(oldData => [...oldData, {
-                t: t,
-                y: I
-            }]);
-
-            setData_GDP(oldData => [...oldData, {
-                t: t,
-                y: GDP
-            }]);
+            appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
+            appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
+            appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
         };
 
         var animation = new Animate(1, params => {
@@ -93,14 +97,25 @@ export default (props) => {
 
                 <Grid item>
                     <Paper>
-                        <ChartWrapper data={data} name={"Infected"} />
-                    </Paper>
-                    <Paper>
-                        <ChartWrapper data={data_GDP} name={"GDP"} />
+                        <LinearProgress variant="determinate" value={progressRate} />
                     </Paper>
                 </Grid>
                 <Grid item>
-
+                    <Paper>
+                        <ChartWrapper config={IGraphCfg} width={100} height={50} />
+                    </Paper>
+                </Grid>
+                <Grid item>
+                    <Paper>
+                        <ChartWrapper config={GDPGraphCfg} width={100} height={50} />
+                    </Paper>
+                </Grid>
+                <Grid item>
+                    <Paper>
+                        <ChartWrapper config={R0GraphCfg} width={100} height={30} />
+                    </Paper>
+                </Grid>
+                <Grid item>
                     <R0Slider setR0={setR0} />
                 </Grid>
             </Grid>

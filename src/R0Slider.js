@@ -52,7 +52,7 @@ export default (props) => {
 
     return (
         <Paper>
-            <div className={classes.root}>
+            <div>
                 <Typography id="discrete-slider-always" gutterBottom>
                     R0
             </Typography>
@@ -67,6 +67,7 @@ export default (props) => {
                     onChange={handleSliderChange}
                     valueLabelDisplay="on"
                 />
-            </div></Paper>
+            </div>
+        </Paper>
     );
 }

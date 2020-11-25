@@ -10,6 +10,16 @@ services:
       - ./:/home/node/app
     command: "npm install"
 
+  build:
+    image: "node:10.23"
+    user: "node"
+    working_dir: /home/node/app
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./:/home/node/app
+    command: "npm run-script build"
+
   start:
     image: "node:10.23"
     user: "node"
