@@ -6,6 +6,7 @@ function makeConfig(name, ylabel) {
                 label: 'Filled',
                 data: [],
                 fill: true,
+                pointRadius: []
             }]
         },
         options: {

@@ -47,6 +47,13 @@ export default (props) => {
     function appendData(old_cfg, set_cfg, p) {
         var cfg = { ...old_cfg };
         cfg.data.datasets[0].data.push(p);
+        cfg.data.datasets[0].pointRadius.push(2);
+        const l = cfg.data.datasets[0].pointRadius.length;
+        if (l >= 3) {
+            cfg.data.datasets[0].pointRadius[l - 2] = 0;
+            console.log(cfg.data.datasets[0].pointRadius);
+        }
+
         set_cfg(cfg);
     }
 
