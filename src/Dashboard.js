@@ -51,7 +51,6 @@ export default (props) => {
         const l = cfg.data.datasets[0].pointRadius.length;
         if (l >= 3) {
             cfg.data.datasets[0].pointRadius[l - 2] = 0;
-            console.log(cfg.data.datasets[0].pointRadius);
         }
 
         set_cfg(cfg);

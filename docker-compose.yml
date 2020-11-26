@@ -30,5 +30,14 @@ services:
       - ./:/home/node/app
     ports:
      - "8888:3000"
-    command: "npm start"
+    command: "npm run-script start"
     stdin_open: true
+
+  ide:
+    image: "theiaide/theia"
+    volumes:
+      - ./:/home/project
+    ports:
+      - 3000:3000
+      - 8888:3001
+      
