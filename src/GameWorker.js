@@ -78,6 +78,7 @@ function initWorker() {
             "R": R.get(t0),
             "R0": R0.get(t0),
             "D": D.get(t0),
+            "H": I.get(t0) * hospital_ratio / (hospital_limit_percentage * N),
             "GDP": (GDP.get(t0) - GDP_baseline.get(t0)) / GDP_baseline.get(t0)
         };
     }

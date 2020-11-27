@@ -56,9 +56,18 @@ export default (props) => {
         set_cfg(cfg);
     }
 
+    function updatePareto(old_cfg, set_cfg, p) {
+        var cfg = { ...old_cfg };
+        cfg.data.datasets[0].data[0] = p
+        set_cfg(cfg);
+    }
+
     const [IGraphCfg, setIGraphCfg] = useState(DashboardViews.infected_cfg);
     const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardViews.gdp_cfg);
     const [R0GraphCfg, setR0GraphCfg] = useState(DashboardViews.r0_cfg);
+    const [ParetoCfg, setParetoCfg] = useState(DashboardViews.pareto_cfg);
+    const [HospitalCfg, setHospitalCfg] = useState(DashboardViews.hospital_cfg);
+
 
     useEffect(() => {
         let gameWorker = (new GameWorker());
@@ -69,6 +78,7 @@ export default (props) => {
             const I = event.data.I;
             const GDP = event.data.GDP;
             const R0 = event.data.R0;
+            const H = event.data.H;
             setDeath(Math.floor(event.data.D));
             setProgressRate(100 * event.data.progress);
             setGDP(GDP);
@@ -76,6 +86,9 @@ export default (props) => {
             appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
             appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
             appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
+            appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
+
+            updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
         };
 
         var animation = new Animate(1, params => {
@@ -141,11 +154,11 @@ export default (props) => {
                     <Paper>
                         <MobileStepper
                             variant="dots"
-                            steps={6}
+                            steps={3}
                             position="static"
                             activeStep={activeStep}
                             nextButton={
-                                <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
+                                <Button size="small" onClick={handleNext} disabled={activeStep === 2}>
                                     Next
                                     {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
                                 </Button>
@@ -157,7 +170,9 @@ export default (props) => {
                                 </Button>
                             }
                         />
-                        <ChartWrapper config={IGraphCfg} width={100} height={50} />
+                        {activeStep === 0 && <ChartWrapper config={ParetoCfg} width={100} height={50} />}
+                        {activeStep === 1 && <ChartWrapper config={IGraphCfg} width={100} height={50} />}
+                        {activeStep === 2 && <ChartWrapper config={HospitalCfg} width={100} height={50} />}
                     </Paper>
                 </Grid>
                 <Grid item>
