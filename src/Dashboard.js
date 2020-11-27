@@ -27,6 +27,8 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 import { useTheme } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 
 const useStyles = makeStyles({
@@ -67,28 +69,43 @@ export default (props) => {
     const [R0GraphCfg, setR0GraphCfg] = useState(DashboardViews.r0_cfg);
     const [ParetoCfg, setParetoCfg] = useState(DashboardViews.pareto_cfg);
     const [HospitalCfg, setHospitalCfg] = useState(DashboardViews.hospital_cfg);
+    const [quote, setQuote] = useState("");
+    const [severity, setSeverity] = useState("success");
 
+    const [open, setOpen] = React.useState(false);
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpen(false);
+    };
 
     useEffect(() => {
         let gameWorker = (new GameWorker());
         setGameWorkerRef(gameWorker);
 
         gameWorker.onmessage = (event) => {
-            const t = event.data.t;
-            const I = event.data.I;
-            const GDP = event.data.GDP;
-            const R0 = event.data.R0;
-            const H = event.data.H;
-            setDeath(Math.floor(event.data.D));
-            setProgressRate(100 * event.data.progress);
-            setGDP(GDP);
+            if (event.data.type == "data") {
+                const t = event.data.t;
+                const I = event.data.I;
+                const GDP = event.data.GDP;
+                const R0 = event.data.R0;
+                const H = event.data.H;
+                setDeath(Math.floor(event.data.D));
+                setProgressRate(100 * event.data.progress);
+                setGDP(GDP);
 
-            appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
-            appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
-            appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
-            appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
+                appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
+                appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
+                appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
+                appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
 
-            updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
+                updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
+            } else if (event.data.type == "quote") {
+                setQuote(event.data.quote);
+                setSeverity(event.data.severity)
+                setOpen(true);
+            }
         };
 
         var animation = new Animate(1, params => {
@@ -106,19 +123,51 @@ export default (props) => {
     }, [R0]);
 
 
-
     const classes = useStyles();
     const theme = useTheme();
 
-    const [activeStep, setActiveStep] = React.useState(0);
+    const charts = [
+        ParetoCfg, IGraphCfg, HospitalCfg, GDPGraphCfg, R0GraphCfg
+    ].map((cfg, idx) => <ChartWrapper key={idx} config={cfg} width={100} height={50} />);
 
-    const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    };
+    function ChartSwitcher(charts, active = 0) {
+        const [activeStep, setActiveStep] = React.useState(active);
 
-    const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
-    };
+        const handleNext = () => {
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        };
+
+        const handleBack = () => {
+            setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        };
+
+        return (
+            <Paper>
+                <MobileStepper
+                    variant="dots"
+                    steps={charts.length}
+                    position="static"
+                    activeStep={activeStep}
+                    nextButton={
+                        <Button size="small" onClick={handleNext} disabled={activeStep === charts.length - 1}>
+                            Next
+                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                        </Button>
+                    }
+                    backButton={
+                        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                                Back
+                                </Button>
+                    }
+                />
+                {charts.map((chart, idx) => (activeStep === idx && chart))}
+            </Paper>
+        );
+    }
+
+
+
 
     return (
         <Container maxWidth="sm">
@@ -144,46 +193,23 @@ export default (props) => {
                         </Grid>
                     </Paper>
                 </Grid>
-
+                <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}
+                    anchorOrigin={{ vertical: "TOP", horizontal: "CENTER" }}
+                >
+                    <MuiAlert severity={severity} elevation={6} variant="filled" >
+                        {quote}
+                    </MuiAlert>
+                </Snackbar>
                 <Grid item>
                     <Paper>
                         <LinearProgress variant="determinate" value={progressRate} />
                     </Paper>
                 </Grid>
                 <Grid item>
-                    <Paper>
-                        <MobileStepper
-                            variant="dots"
-                            steps={3}
-                            position="static"
-                            activeStep={activeStep}
-                            nextButton={
-                                <Button size="small" onClick={handleNext} disabled={activeStep === 2}>
-                                    Next
-                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                                </Button>
-                            }
-                            backButton={
-                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                                Back
-                                </Button>
-                            }
-                        />
-                        {activeStep === 0 && <ChartWrapper config={ParetoCfg} width={100} height={50} />}
-                        {activeStep === 1 && <ChartWrapper config={IGraphCfg} width={100} height={50} />}
-                        {activeStep === 2 && <ChartWrapper config={HospitalCfg} width={100} height={50} />}
-                    </Paper>
+                    {ChartSwitcher(charts, 1)}
                 </Grid>
                 <Grid item>
-                    <Paper>
-                        <ChartWrapper config={GDPGraphCfg} width={100} height={50} />
-                    </Paper>
-                </Grid>
-                <Grid item>
-                    <Paper>
-                        <ChartWrapper config={R0GraphCfg} width={100} height={30} />
-                    </Paper>
+                    {ChartSwitcher(charts, 3)}
                 </Grid>
                 <Grid item>
                     <R0Slider setR0={setR0} />

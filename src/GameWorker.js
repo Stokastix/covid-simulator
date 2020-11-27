@@ -10,6 +10,15 @@ Date.prototype.addDays = function (days) {
 
 const date = new Date("2020-01-01");
 
+const quotes = [
+    { "date": new Date("2020-01-02"), "severity": "success", "quote": "L'épidémie vient de se déclarer, à vous de jouer!" },
+    { "date": new Date("2020-02-02"), "severity": "info", "quote": "\"Il n'y aura quasiment pas de mort!\"" },
+    { "date": new Date("2020-03-15"), "severity": "warning", "quote": "Le conseil scientifique conseille de confiner" },
+    { "date": new Date("2020-06-15"), "severity": "info", "quote": "\"Il n'y aura pas de seconde vague\"" },
+    { "date": new Date("2020-09-15"), "severity": "warning", "quote": "Le conseil scientifique conseille de reconfiner" },
+    { "date": new Date("2020-11-15"), "severity": "success", "quote": "Les vaccins sont en production" },
+]
+
 function initWorker() {
 
 
@@ -41,6 +50,8 @@ function initWorker() {
     var GDP = nj.zeros(N_STEPS)
 
     var t = 1
+    var qidx = 0;
+
 
     const GDP_baseline = TIME_SPACE.multiply(alpha(R0.get(0)));
 
@@ -60,6 +71,11 @@ function initWorker() {
 
             GDP.set(t, GDP.get(t - 1) + dt * alpha(R0.get(t)) * ((S.get(t) + R.get(t)) / N))
             t += 1
+
+            if (qidx < quotes.length && date.addDays(t * dt) < quotes[qidx].date && date.addDays((t + 1) * dt) >= quotes[qidx].date) {
+                postMessage({ ...quotes[qidx], "type": "quote" });
+                qidx += 1;
+            }
         }
     }
 
@@ -71,6 +87,7 @@ function initWorker() {
     this.get = () => {
         const t0 = Math.max(0, t - 1);
         return {
+            "type": "data",
             "t": date.addDays(t0 * dt),
             "progress": t0 / TIME_STEPS.get(-1),
             "S": S.get(t0),
