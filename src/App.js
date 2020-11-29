@@ -1,5 +1,4 @@
 import './App.css';
-import React from 'react';
 import Dashboard from "./Dashboard";
 
 import PropTypes from 'prop-types';
@@ -11,6 +10,9 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
+
+import React from "react";
+
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -48,6 +50,7 @@ function HideAppBar(props) {
 }
 
 function App() {
+
   return (
     <div className="App">
       <header className="App-header">
