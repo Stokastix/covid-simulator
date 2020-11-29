@@ -1,6 +1,6 @@
 # covid-simulator
 
-setup the project:
+# Setup the project:
 
 `git clone https://github.com/Stokastix/covid-simulator.git`
 
@@ -9,9 +9,14 @@ setup the project:
 `docker-compose up install_package`
 
 
-run the project:
+# Run the project:
 
 `docker-compose up start`
 
+Once started, head to [http://localhost:8888](http://localhost:8888)
 
-once started, head to [http://localhost:8888](http://localhost:8888)
+# Run an ide for editing the project:
+
+`docker-compose up ide`
+
+Once started, head to [http://localhost:3000](http://localhost:3000)

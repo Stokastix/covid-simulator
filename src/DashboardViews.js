@@ -15,7 +15,7 @@ function makeConfig(name, ylabel) {
             },
             title: {
                 display: true,
-                text: name
+                text: name + ' (' + ylabel + ')'
             },
             scales: {
                 xAxes: [{
@@ -25,7 +25,7 @@ function makeConfig(name, ylabel) {
                 yAxes: [{
                     display: true,
                     scaleLabel: {
-                        display: true,
+                        display: false,
                         labelString: ylabel
                     }
                 }]

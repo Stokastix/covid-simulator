@@ -187,7 +187,7 @@ export default (props) => {
                             </Grid>
                             <Grid item>
                                 <Paper>
-                                    Death Toll: {death}
+                                    Death Toll: {death.toLocaleString('fr')}
                                 </Paper>
                             </Grid>
                         </Grid>
