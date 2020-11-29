@@ -1,4 +1,4 @@
-function makeConfig(name, ylabel) {
+function makeConfig(name, ylabel, color = 'rgba(0,0,0,0.1)') {
     return {
         type: 'line',
         data: {
@@ -6,7 +6,8 @@ function makeConfig(name, ylabel) {
                 label: 'Filled',
                 data: [],
                 fill: true,
-                pointRadius: []
+                pointRadius: [],
+                backgroundColor: color
             }]
         },
         options: {
@@ -34,7 +35,7 @@ function makeConfig(name, ylabel) {
     };
 }
 
-var infected_cfg = makeConfig("Infected", "cases");
+var infected_cfg = makeConfig("Infected", "cases", 'rgba(255,0,0,0.5)');
 infected_cfg.options.scales.yAxes[0].ticks = {
     callback: function (value, index, values) {
         if (value >= 1e6) {
@@ -48,7 +49,7 @@ infected_cfg.options.scales.yAxes[0].ticks = {
 }
 infected_cfg.data.datasets[0].lineTension = 0;
 
-var hospital_cfg = makeConfig("Hospital Capacity", "%");
+var hospital_cfg = makeConfig("Hospital Capacity", "%", 'rgba(88,24,69,0.5)');
 hospital_cfg.options.scales.yAxes[0].ticks = {
     min: 0,
     max: 200.
@@ -56,7 +57,7 @@ hospital_cfg.options.scales.yAxes[0].ticks = {
 
 
 
-var gdp_cfg = makeConfig("GDP", "%");
+var gdp_cfg = makeConfig("GDP", "%",'rgba(255,195,0,0.5)');
 gdp_cfg.options.scales.yAxes[0].ticks = {
     min: -20,
     max: 0.
