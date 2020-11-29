@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   install_package:
     image: "node:10.23"
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./:/home/node/app
     ports:
-     - "127.0.0.1:8888:3000"
+      - "127.0.0.1:8888:3000"
     command: "npm run-script start"
     stdin_open: true
 
@@ -40,4 +40,3 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
       - "127.0.0.1:8888:3001"
-
