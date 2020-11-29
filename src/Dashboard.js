@@ -11,6 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
+import EuroIcon from '@material-ui/icons/Euro';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
+
 import R0Slider from "./R0Slider";
 import { useState } from 'react'
 
@@ -69,6 +73,7 @@ export default (props) => {
     const [R0GraphCfg, setR0GraphCfg] = useState(DashboardViews.r0_cfg);
     const [ParetoCfg, setParetoCfg] = useState(DashboardViews.pareto_cfg);
     const [HospitalCfg, setHospitalCfg] = useState(DashboardViews.hospital_cfg);
+    const [DeathsGraphCfg, setDeathsGraphCfg] = useState(DashboardViews.deaths_cfg);
     const [quote, setQuote] = useState("");
     const [severity, setSeverity] = useState("success");
 
@@ -99,6 +104,7 @@ export default (props) => {
                 appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
                 appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
                 appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
+                appendData(DeathsGraphCfg, setDeathsGraphCfg, { t: t, y: Math.floor(event.data.D)});
 
                 updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
             } else if (event.data.type == "quote") {
@@ -127,7 +133,7 @@ export default (props) => {
     const theme = useTheme();
 
     const charts = [
-        ParetoCfg, IGraphCfg, HospitalCfg, GDPGraphCfg, R0GraphCfg
+        ParetoCfg, IGraphCfg, HospitalCfg, DeathsGraphCfg, GDPGraphCfg, R0GraphCfg
     ].map((cfg, idx) => <ChartWrapper key={idx} config={cfg} width={100} height={50} />);
 
     function ChartSwitcher(charts, active = 0) {
@@ -182,12 +188,20 @@ export default (props) => {
                             alignItems="stretch">
                             <Grid item>
                                 <Paper>
-                                    GDP: {Math.round(100 * gdp, 2)}%
-                            </Paper>
+                                    <LocalHospitalIcon style={{ color: 'rgb(199,0,57)' }}/>
+                                    Infected 
+                                </Paper>
                             </Grid>
                             <Grid item>
                                 <Paper>
-                                    Death Toll: {death.toLocaleString('fr')}
+                                    <EuroIcon style={{ color: 'rgb(255,195,0)' }}/>
+                                    GDP {Math.round(100 * gdp, 2)}%
+                                </Paper>
+                            </Grid>
+                            <Grid item>
+                                <Paper>
+                                    <AirlineSeatFlatIcon style={{ color: 'rgb(0,0,0)' }}/>
+                                    Deaths {death.toLocaleString('fr')}
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -209,7 +223,7 @@ export default (props) => {
                     {ChartSwitcher(charts, 1)}
                 </Grid>
                 <Grid item>
-                    {ChartSwitcher(charts, 3)}
+                    {ChartSwitcher(charts, 4)}
                 </Grid>
                 <Grid item>
                     <R0Slider setR0={setR0} />

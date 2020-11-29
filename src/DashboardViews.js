@@ -55,7 +55,18 @@ hospital_cfg.options.scales.yAxes[0].ticks = {
     max: 200.
 }
 
-
+var deaths_cfg = makeConfig("Deaths", "Total", 'rgba(0,0,0,0.5)');
+deaths_cfg.options.scales.yAxes[0].ticks = {
+    callback: function (value, index, values) {
+        if (value >= 1e6) {
+            return value / 1e6 + 'M';
+        } else if (value >= 1e3) {
+            return value / 1e3 + 'K';
+        }
+        return value
+    },
+    min: 0.
+}
 
 var gdp_cfg = makeConfig("GDP", "%",'rgba(255,195,0,0.5)');
 gdp_cfg.options.scales.yAxes[0].ticks = {
@@ -135,6 +146,7 @@ var pareto_cfg = {
 export default {
     "hospital_cfg": hospital_cfg,
     "infected_cfg": infected_cfg,
+    "deaths_cfg": deaths_cfg,
     "gdp_cfg": gdp_cfg,
     "r0_cfg": r0_cfg,
     "pareto_cfg": pareto_cfg
