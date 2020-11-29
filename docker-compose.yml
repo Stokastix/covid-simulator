@@ -29,7 +29,7 @@ services:
     volumes:
       - ./:/home/node/app
     ports:
-      - "127.0.0.1:8888:3000"
+      - "127.0.0.1:8888:3001"
     command: "npm run-script start"
     stdin_open: true
 
