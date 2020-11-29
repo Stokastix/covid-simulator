@@ -11,11 +11,8 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
 
-import React,{useEffect} from "react";
-import ReactGA from "react-ga";
+import React from "react";
 
-// Google Analytics ID
-ReactGA.initialize('G-36T1K0HYSX');
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -53,10 +50,6 @@ function HideAppBar(props) {
 }
 
 function App() {
-
-  useEffect(() => {
-    ReactGA.pageview(window.location.pathname);
-  })
 
   return (
     <div className="App">
