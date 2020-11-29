@@ -14,6 +14,9 @@ import Slide from '@material-ui/core/Slide';
 import React,{useEffect} from "react";
 import ReactGA from "react-ga";
 
+// Google Analytics ID
+ReactGA.initialize('G-36T1K0HYSX');
+
 function HideOnScroll(props) {
   const { children, window } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
@@ -52,7 +55,6 @@ function HideAppBar(props) {
 function App() {
 
   useEffect(() => {
-    ReactGA.initialize('G-36T1K0HYSX');
     ReactGA.pageview(window.location.pathname);
   })
 
