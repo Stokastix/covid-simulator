@@ -11,7 +11,8 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
 
-import React from "react";
+import React, { useState, useRef, useEffect } from 'react'
+import Button from '@material-ui/core/Button';
 
 
 function HideOnScroll(props) {
@@ -51,10 +52,13 @@ function HideAppBar(props) {
 
 function App() {
 
+  const [start, setStart] = useState(false);
+
   return (
     <div className="App">
       <header className="App-header">
-        <Dashboard />
+        {!start && <Button onClick={() => setStart(true)}>start</Button>}
+        {start && <Dashboard start={start} />}
       </header>
     </div>
   );

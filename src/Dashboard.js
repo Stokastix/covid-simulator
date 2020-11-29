@@ -46,6 +46,8 @@ export default (props) => {
     const [gameWorkerRef, setGameWorkerRef] = useState();
     const [progressRate, setProgressRate] = useState(0.);
 
+    const {start, ...rest } = props;
+
     function appendData(old_cfg, set_cfg, p) {
         var cfg = { ...old_cfg };
         cfg.data.datasets[0].data.push(p);
@@ -81,39 +83,41 @@ export default (props) => {
     };
 
     useEffect(() => {
-        let gameWorker = (new GameWorker());
-        setGameWorkerRef(gameWorker);
+        if (start) {
+            let gameWorker = (new GameWorker());
+            setGameWorkerRef(gameWorker);
 
-        gameWorker.onmessage = (event) => {
-            if (event.data.type == "data") {
-                const t = event.data.t;
-                const I = event.data.I;
-                const GDP = event.data.GDP;
-                const R0 = event.data.R0;
-                const H = event.data.H;
-                setDeath(Math.floor(event.data.D));
-                setProgressRate(100 * event.data.progress);
-                setGDP(GDP);
+            gameWorker.onmessage = (event) => {
+                if (event.data.type == "data") {
+                    const t = event.data.t;
+                    const I = event.data.I;
+                    const GDP = event.data.GDP;
+                    const R0 = event.data.R0;
+                    const H = event.data.H;
+                    setDeath(Math.floor(event.data.D));
+                    setProgressRate(100 * event.data.progress);
+                    setGDP(GDP);
 
-                appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
-                appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
-                appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
-                appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
+                    appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
+                    appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
+                    appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
+                    appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
 
-                updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
-            } else if (event.data.type == "quote") {
-                setQuote(event.data.quote);
-                setSeverity(event.data.severity)
-                setOpen(true);
-            }
-        };
+                    updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
+                } else if (event.data.type == "quote") {
+                    setQuote(event.data.quote);
+                    setSeverity(event.data.severity)
+                    setOpen(true);
+                }
+            };
 
-        var animation = new Animate(1, params => {
-            gameWorker.postMessage('getdata');
-        });
+            var animation = new Animate(1, params => {
+                gameWorker.postMessage('getdata');
+            });
 
-        return animation.start().stop
-    }, []);
+            return animation.start().stop
+        }
+    }, [start]);
 
 
     useEffect(() => {
