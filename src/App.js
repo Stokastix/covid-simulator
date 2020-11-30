@@ -1,5 +1,5 @@
 import './App.css';
-import Dashboard from "./Dashboard";
+import Dashboard from './Dashboard';
 
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
@@ -11,9 +11,10 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Slide from '@material-ui/core/Slide';
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 
+import firebase from 'firebase/app';
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -51,13 +52,38 @@ function HideAppBar(props) {
 }
 
 function App() {
-
   const [start, setStart] = useState(false);
+
+  const testDb = () => {
+    const db = firebase.firestore();
+
+    // Write on db a random document
+    db.collection('logs')
+      .add({
+        death: Math.floor(Math.random() * 1000000),
+        gdp: -Math.floor(Math.random() * 12),
+      })
+      .then((docRef) => {
+        console.log('Document written with ID: ', docRef.id);
+
+        // Get all the documents from the collection
+        db.collection('logs')
+          .get()
+          .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              console.log(doc.id, ' => ', doc.data());
+            });
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         {!start && <Button onClick={() => setStart(true)}>start</Button>}
+        {!start && <Button onClick={testDb}>Test DB</Button>}
         {start && <Dashboard start={start} />}
       </header>
     </div>
