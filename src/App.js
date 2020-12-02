@@ -83,7 +83,6 @@ function App() {
     <div className="App">
       <header className="App-header">
         {!start && <Button onClick={() => setStart(true)}>start</Button>}
-        {!start && <Button onClick={testDb}>Test DB</Button>}
         {start && <Dashboard start={start} />}
       </header>
     </div>
