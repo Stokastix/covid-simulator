@@ -52,11 +52,12 @@ function initWorker() {
     var t = 1
     var qidx = 0;
 
+    var gameFinished = false;
 
     const GDP_baseline = TIME_SPACE.multiply(alpha(R0.get(0)));
 
     function gameLoop() {
-        if (t < TIME_STEPS.get(-1)) {
+        if (t <= TIME_STEPS.get(-1)) {
             var beta = R0.get(t) * gamma
             const tmp1 = (beta / N) * I.get(t - 1) * S.get(t - 1)
             const tmp2 = gamma * I.get(t - 1)
@@ -76,6 +77,9 @@ function initWorker() {
                 postMessage({ ...quotes[qidx], "type": "quote" });
                 qidx += 1;
             }
+        } else if (!gameFinished) {
+            gameFinished = true;
+            postMessage({ "type": "gameFinished", "D": D.get(-1), "GDP": (GDP.get(-1) - GDP_baseline.get(-1)) / GDP_baseline.get(-1) });
         }
     }
 

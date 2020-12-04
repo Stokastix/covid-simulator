@@ -14,7 +14,6 @@ import Slide from '@material-ui/core/Slide';
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 
-import firebase from 'firebase/app';
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -53,31 +52,6 @@ function HideAppBar(props) {
 
 function App() {
   const [page, setPage] = useState("index");
-
-  const testDb = () => {
-    const db = firebase.firestore();
-
-    // Write on db a random document
-    db.collection('logs')
-      .add({
-        death: Math.floor(Math.random() * 1000000),
-        gdp: -Math.floor(Math.random() * 12),
-      })
-      .then((docRef) => {
-        console.log('Document written with ID: ', docRef.id);
-
-        // Get all the documents from the collection
-        db.collection('logs')
-          .get()
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              console.log(doc.id, ' => ', doc.data());
-            });
-          })
-          .catch((err) => console.log(err));
-      })
-      .catch((err) => console.log(err));
-  };
 
   return (
     <div className="App">

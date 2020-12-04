@@ -36,7 +36,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 import ChartSwitcher from "./ChartSwitcher"
 import PlayArrowSharpIcon from '@material-ui/icons/PlayArrowSharp';
-
+import { dbGetScores, dbUploadScore } from "./dbUtils"
 
 const useStyles = makeStyles({
     root: {
@@ -117,6 +117,12 @@ export default (props) => {
 
     useEffect(() => {
         setOpen(true);
+
+        dbGetScores(dataset => {
+            var cfg = { ...ParetoCfg };
+            cfg.data.datasets[1].data = dataset;
+            setParetoCfg(cfg);
+        });
     }, []);
 
     useEffect(() => {
@@ -147,6 +153,11 @@ export default (props) => {
                     setQuote(event.data.quote);
                     setSeverity(event.data.severity)
                     setOpen(true);
+                } else if (event.data.type == "gameFinished") {
+                    setQuote("Congratulations for participating!");
+                    setSeverity("success");
+                    setOpen(true);
+                    dbUploadScore(event.data.D, event.data.GDP);
                 }
             };
 
