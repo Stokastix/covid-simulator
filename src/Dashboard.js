@@ -11,9 +11,9 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import LinearProgress from '@material-ui/core/LinearProgress';
 
-import EuroIcon from '@material-ui/icons/Euro';
-import LocalHospitalIcon from '@material-ui/icons/LocalHospital';
+import LocalHospitalIcon from '@material-ui/icons/LocalHospitalOutlined';
 import AirlineSeatFlatIcon from '@material-ui/icons/AirlineSeatFlat';
+import EuroIcon from '@material-ui/icons/AccountBalanceOutlined';
 
 import R0Slider from "./R0Slider";
 import { useState } from 'react'
@@ -24,7 +24,7 @@ import GameWorker from 'worker-loader!./GameWorker.js';
 import { useRef, useEffect } from 'react'
 import Animate from "./Animate"
 
-import DashboardViews from "./DashboardViews"
+import DashboardConfig from "./DashboardConfig"
 import MobileStepper from '@material-ui/core/MobileStepper';
 import Button from '@material-ui/core/Button';
 import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
@@ -34,6 +34,7 @@ import { useTheme } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
+import ChartSwitcher from "./ChartSwitcher"
 
 const useStyles = makeStyles({
     root: {
@@ -42,15 +43,49 @@ const useStyles = makeStyles({
     },
 });
 
+function nFormatter(num, digits) {
+    var si = [
+        { value: 1, symbol: "" },
+        { value: 1E3, symbol: "k" },
+        { value: 1E6, symbol: "M" },
+        { value: 1E9, symbol: "G" },
+        { value: 1E12, symbol: "T" },
+        { value: 1E15, symbol: "P" },
+        { value: 1E18, symbol: "E" }
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var i;
+    for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+            break;
+        }
+    }
+    return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+}
+
 export default (props) => {
     const [death, setDeath] = useState(0);
+    const [infected, setInfected] = useState(0);
     const [gdp, setGDP] = useState(0);
 
     const [R0, setR0] = useState(3.);
     const [gameWorkerRef, setGameWorkerRef] = useState();
     const [progressRate, setProgressRate] = useState(0.);
 
-    const {start, ...rest } = props;
+    const { start, ...rest } = props;
+
+
+    const [IGraphCfg, setIGraphCfg] = useState(DashboardConfig.infected_cfg);
+    const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardConfig.gdp_cfg);
+    const [R0GraphCfg, setR0GraphCfg] = useState(DashboardConfig.r0_cfg);
+    const [ParetoCfg, setParetoCfg] = useState(DashboardConfig.pareto_cfg);
+    const [HospitalCfg, setHospitalCfg] = useState(DashboardConfig.hospital_cfg);
+    const [DeathsGraphCfg, setDeathsGraphCfg] = useState(DashboardConfig.deaths_cfg);
+    const [quote, setQuote] = useState("");
+    const [severity, setSeverity] = useState("success");
+
+    const [chartList, setChartList] = useState([1]);
+
 
     function appendData(old_cfg, set_cfg, p) {
         var cfg = { ...old_cfg };
@@ -70,20 +105,11 @@ export default (props) => {
         set_cfg(cfg);
     }
 
-    const [IGraphCfg, setIGraphCfg] = useState(DashboardViews.infected_cfg);
-    const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardViews.gdp_cfg);
-    const [R0GraphCfg, setR0GraphCfg] = useState(DashboardViews.r0_cfg);
-    const [ParetoCfg, setParetoCfg] = useState(DashboardViews.pareto_cfg);
-    const [HospitalCfg, setHospitalCfg] = useState(DashboardViews.hospital_cfg);
-    const [DeathsGraphCfg, setDeathsGraphCfg] = useState(DashboardViews.deaths_cfg);
-    const [quote, setQuote] = useState("");
-    const [severity, setSeverity] = useState("success");
-
     const [open, setOpen] = React.useState(false);
     const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
+        /*if (reason === 'clickaway') {
+            return
+        }*/
         setOpen(false);
     };
 
@@ -102,12 +128,13 @@ export default (props) => {
                     setDeath(Math.floor(event.data.D));
                     setProgressRate(100 * event.data.progress);
                     setGDP(GDP);
+                    setInfected(I);
 
                     appendData(IGraphCfg, setIGraphCfg, { t: t, y: I });
                     appendData(GDPGraphCfg, setGDPGraphCfg, { t: t, y: 100 * GDP });
                     appendData(R0GraphCfg, setR0GraphCfg, { t: t, y: R0 });
                     appendData(HospitalCfg, setHospitalCfg, { t: t, y: 100 * H });
-                    appendData(DeathsGraphCfg, setDeathsGraphCfg, { t: t, y: Math.floor(event.data.D)});
+                    appendData(DeathsGraphCfg, setDeathsGraphCfg, { t: t, y: Math.floor(event.data.D) });
 
                     updatePareto(ParetoCfg, setParetoCfg, { x: 1 + event.data.D, y: 100 * GDP });
                 } else if (event.data.type == "quote") {
@@ -132,50 +159,14 @@ export default (props) => {
     }, [R0]);
 
 
-    const classes = useStyles();
-    const theme = useTheme();
-
     const charts = [
         ParetoCfg, IGraphCfg, HospitalCfg, DeathsGraphCfg, GDPGraphCfg, R0GraphCfg
-    ].map((cfg, idx) => <ChartWrapper key={idx} config={cfg} width={100} height={50} />);
-
-    function ChartSwitcher(charts, active = 0) {
-        const [activeStep, setActiveStep] = React.useState(active);
-
-        const handleNext = () => {
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        };
-
-        const handleBack = () => {
-            setActiveStep((prevActiveStep) => prevActiveStep - 1);
-        };
-
-        return (
-            <Paper>
-                <MobileStepper
-                    variant="dots"
-                    steps={charts.length}
-                    position="static"
-                    activeStep={activeStep}
-                    nextButton={
-                        <Button size="small" onClick={handleNext} disabled={activeStep === charts.length - 1}>
-                            Next
-                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-                        </Button>
-                    }
-                    backButton={
-                        <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                            {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-                                Back
-                                </Button>
-                    }
-                />
-                {charts.map((chart, idx) => (activeStep === idx && chart))}
-            </Paper>
-        );
-    }
-
-
+    ].map((cfg, idx) =>
+        <ChartWrapper
+            key={idx}
+            config={cfg}
+            width={100} height={50} />
+    );
 
 
     return (
@@ -186,29 +177,58 @@ export default (props) => {
                 spacing={3}
             >
                 <Grid item xs={12}>
-                    <Paper>
-                        <Grid container justify="center" spacing={2}
-                            alignItems="stretch">
-                            <Grid item>
-                                <Paper>
-                                    <LocalHospitalIcon style={{ color: 'rgb(199,0,57)' }}/>
-                                    Infected 
-                                </Paper>
-                            </Grid>
-                            <Grid item>
-                                <Paper>
-                                    <EuroIcon style={{ color: 'rgb(255,195,0)' }}/>
-                                    GDP {Math.round(100 * gdp, 2)}%
-                                </Paper>
-                            </Grid>
-                            <Grid item>
-                                <Paper>
-                                    <AirlineSeatFlatIcon style={{ color: 'rgb(0,0,0)' }}/>
-                                    Deaths {death.toLocaleString('fr')}
-                                </Paper>
-                            </Grid>
+                    <Grid container justify="center" spacing={2}
+                        alignItems="stretch">
+
+                        <Grid item xs={4}>
+                            <Paper variant="outlined" >
+                                <Grid container wrap="nowrap" spacing={2}>
+                                    <Grid item>
+                                        <LocalHospitalIcon style={{ color: 'rgb(199,0,57)' }} />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography gutterBottom variant="subtitle1">
+                                            Infected
+                                        </Typography>
+                                        <Typography>{nFormatter(infected, 2)}</Typography>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
                         </Grid>
-                    </Paper>
+
+                        <Grid item xs={4}>
+                            <Paper variant="outlined" >
+                                <Grid container wrap="nowrap" spacing={2}>
+                                    <Grid item>
+                                        <EuroIcon style={{ color: 'rgb(255,195,0)' }} />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography gutterBottom variant="subtitle1">
+                                            GDP
+                                        </Typography>
+                                        <Typography>{(100 * gdp).toFixed(2)}%</Typography>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+                        </Grid>
+
+                        <Grid item xs={4}>
+                            <Paper variant="outlined" >
+                                <Grid container wrap="nowrap" spacing={2}>
+                                    <Grid item>
+                                        <AirlineSeatFlatIcon style={{ color: 'rgb(0,0,0)' }} />
+                                    </Grid>
+                                    <Grid item xs>
+                                        <Typography gutterBottom variant="subtitle1">
+                                            Death
+                                        </Typography>
+                                        <Typography>{nFormatter(death, 2)}</Typography>
+                                    </Grid>
+                                </Grid>
+                            </Paper>
+                        </Grid>
+
+                    </Grid>
                 </Grid>
                 <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}
                     anchorOrigin={{ vertical: "TOP", horizontal: "CENTER" }}
@@ -222,12 +242,26 @@ export default (props) => {
                         <LinearProgress variant="determinate" value={progressRate} />
                     </Paper>
                 </Grid>
+
+                {chartList.map(
+                    (active, idx) =>
+                        <Grid key={idx} item>
+                            <ChartSwitcher charts={charts} active={active} />
+                        </Grid>
+                )}
+
+
                 <Grid item>
-                    {ChartSwitcher(charts, 1)}
+                    <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={
+                        () => {
+                            setChartList(prev => [...prev, 1]);
+                        }
+                    }>
+                        Add Graph
+                    </Button>
                 </Grid>
-                <Grid item>
-                    {ChartSwitcher(charts, 4)}
-                </Grid>
+
+
                 <Grid item>
                     <R0Slider setR0={setR0} />
                 </Grid>

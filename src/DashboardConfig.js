@@ -68,7 +68,7 @@ deaths_cfg.options.scales.yAxes[0].ticks = {
     min: 0.
 }
 
-var gdp_cfg = makeConfig("GDP", "%",'rgba(255,195,0,0.5)');
+var gdp_cfg = makeConfig("GDP", "%", 'rgba(255,195,0,0.5)');
 gdp_cfg.options.scales.yAxes[0].ticks = {
     min: -20,
     max: 0.

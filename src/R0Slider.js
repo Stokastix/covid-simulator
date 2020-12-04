@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: 300,
+        width: "80%",
     },
     margin: {
         height: theme.spacing(3),
@@ -51,7 +51,8 @@ export default (props) => {
     };
 
     return (
-        <Paper>
+        <Paper
+            variant="outlined">
             <div>
                 <Typography id="discrete-slider-always" gutterBottom>
                     R0
@@ -66,6 +67,7 @@ export default (props) => {
                     marks={marks}
                     onChange={handleSliderChange}
                     valueLabelDisplay="on"
+                    className={classes.root}
                 />
             </div>
         </Paper>

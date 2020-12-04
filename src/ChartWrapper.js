@@ -7,11 +7,11 @@ export default props => {
 
     const { config, ...rest } = props
 
-    const [chart, setChart] = useState();
+    const chart = useRef(null);
 
     useEffect(() => {
-        if (chart) {
-            chart.update({
+        if (chart.current) {
+            chart.current.update({
                 duration: 500,
                 lazy: true,
                 //easing: 'easeInOutSine'
@@ -20,8 +20,8 @@ export default props => {
     }, [config]);
 
     useEffect(() => {
-        var ctx = containerRef.current;
-        setChart(new Chart(ctx, config));
+        var canvas = containerRef.current;
+        chart.current = new Chart(canvas, config);
     }, [])
 
     return <canvas ref={containerRef} {...rest} />
