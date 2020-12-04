@@ -35,6 +35,8 @@ import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
 import ChartSwitcher from "./ChartSwitcher"
+import PlayArrowSharpIcon from '@material-ui/icons/PlayArrowSharp';
+
 
 const useStyles = makeStyles({
     root: {
@@ -70,10 +72,8 @@ export default (props) => {
 
     const [R0, setR0] = useState(3.);
     const gameWorkerRef = useRef(null);
+    const [start, setStart] = useState(false);
     const [progressRate, setProgressRate] = useState(0.);
-
-    const { start, ...rest } = props;
-
 
     const [IGraphCfg, setIGraphCfg] = useState(DashboardConfig.infected_cfg);
     const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardConfig.gdp_cfg);
@@ -81,8 +81,11 @@ export default (props) => {
     const [ParetoCfg, setParetoCfg] = useState(DashboardConfig.pareto_cfg);
     const [HospitalCfg, setHospitalCfg] = useState(DashboardConfig.hospital_cfg);
     const [DeathsGraphCfg, setDeathsGraphCfg] = useState(DashboardConfig.deaths_cfg);
-    const [quote, setQuote] = useState("");
-    const [severity, setSeverity] = useState("success");
+
+
+    const [open, setOpen] = React.useState(false);
+    const [quote, setQuote] = useState("click on Start Game when you are ready!");
+    const [severity, setSeverity] = useState("info");
 
     const [chartList, setChartList] = useState([1]);
 
@@ -105,13 +108,16 @@ export default (props) => {
         set_cfg(cfg);
     }
 
-    const [open, setOpen] = React.useState(false);
     const handleClose = (event, reason) => {
         /*if (reason === 'clickaway') {
             return
         }*/
         setOpen(false);
     };
+
+    useEffect(() => {
+        setOpen(true);
+    }, []);
 
     useEffect(() => {
         if (start) {
@@ -153,7 +159,7 @@ export default (props) => {
     }, [start]);
 
     useEffect(() => {
-        if (gameWorkerRef) {
+        if (gameWorkerRef.current) {
             gameWorkerRef.current.postMessage({ "R0": R0, "msg": "setR0" })
         }
     }, [R0]);
@@ -230,6 +236,7 @@ export default (props) => {
 
                     </Grid>
                 </Grid>
+
                 <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}
                     anchorOrigin={{ vertical: "TOP", horizontal: "CENTER" }}
                 >
@@ -261,10 +268,23 @@ export default (props) => {
                     </Button>
                 </Grid>
 
-
-                <Grid item xs={12}>
-                    <R0Slider setR0={setR0} />
-                </Grid>
+                {!start &&
+                    <Grid item xs={12}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            startIcon={<PlayArrowSharpIcon />}
+                            onClick={() => setStart(true)}
+                        >
+                            Start Game
+                    </Button>
+                    </Grid>
+                }{start &&
+                    <Grid item xs={12}>
+                        <R0Slider setR0={setR0} />
+                    </Grid>
+                }
             </Grid>
         </Container >
     );

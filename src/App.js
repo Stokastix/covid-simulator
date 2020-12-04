@@ -52,7 +52,7 @@ function HideAppBar(props) {
 }
 
 function App() {
-  const [start, setStart] = useState(false);
+  const [page, setPage] = useState("index");
 
   const testDb = () => {
     const db = firebase.firestore();
@@ -82,8 +82,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {!start && <Button onClick={() => setStart(true)}>start</Button>}
-        {start && <Dashboard start={start} />}
+        {page === "index" && <>
+          <Button onClick={() => setPage("play")}>Start simulation</Button>
+          <Button onClick={() => setPage("about")}>About</Button>
+        </>}
+        {page === "play" && <Dashboard />}
       </header>
     </div>
   );
