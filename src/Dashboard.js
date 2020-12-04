@@ -69,7 +69,7 @@ export default (props) => {
     const [gdp, setGDP] = useState(0);
 
     const [R0, setR0] = useState(3.);
-    const [gameWorkerRef, setGameWorkerRef] = useState();
+    const gameWorkerRef = useRef(null);
     const [progressRate, setProgressRate] = useState(0.);
 
     const { start, ...rest } = props;
@@ -116,7 +116,7 @@ export default (props) => {
     useEffect(() => {
         if (start) {
             let gameWorker = (new GameWorker());
-            setGameWorkerRef(gameWorker);
+            gameWorkerRef.current = gameWorker;
 
             gameWorker.onmessage = (event) => {
                 if (event.data.type == "data") {
@@ -154,7 +154,7 @@ export default (props) => {
 
     useEffect(() => {
         if (gameWorkerRef) {
-            gameWorkerRef.postMessage({ "R0": R0, "msg": "setR0" })
+            gameWorkerRef.current.postMessage({ "R0": R0, "msg": "setR0" })
         }
     }, [R0]);
 
@@ -170,8 +170,8 @@ export default (props) => {
 
 
     return (
-        <Container maxWidth="sm">
-            <Grid container direction="column"
+        <Container maxWidth="md">
+            <Grid container
                 justify="flex-start"
                 alignItems="stretch"
                 spacing={3}
@@ -237,7 +237,7 @@ export default (props) => {
                         {quote}
                     </MuiAlert>
                 </Snackbar>
-                <Grid item>
+                <Grid item xs={12}>
                     <Paper>
                         <LinearProgress variant="determinate" value={progressRate} />
                     </Paper>
@@ -245,13 +245,13 @@ export default (props) => {
 
                 {chartList.map(
                     (active, idx) =>
-                        <Grid key={idx} item>
+                        <Grid key={idx} item xs={12} md={6}>
                             <ChartSwitcher charts={charts} active={active} />
                         </Grid>
                 )}
 
 
-                <Grid item>
+                <Grid item xs={12}>
                     <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={
                         () => {
                             setChartList(prev => [...prev, 1]);
@@ -262,7 +262,7 @@ export default (props) => {
                 </Grid>
 
 
-                <Grid item>
+                <Grid item xs={12}>
                     <R0Slider setR0={setR0} />
                 </Grid>
             </Grid>
