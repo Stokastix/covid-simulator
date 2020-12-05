@@ -13,6 +13,10 @@ import Slide from '@material-ui/core/Slide';
 
 import React, { useState, useRef, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
+import ChartWrapper from "./ChartWrapper";
+import DashboardConfig from "./DashboardConfig"
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 
 
 function HideOnScroll(props) {
@@ -57,8 +61,24 @@ function App() {
     <div className="App">
       <header className="App-header">
         {page === "index" && <>
-          <Button onClick={() => setPage("play")}>Start simulation</Button>
-          <Button onClick={() => setPage("about")}>About</Button>
+          <Container maxWidth="sm">
+            <Grid container
+              justify="flex-start"
+              alignItems="stretch"
+              spacing={3}
+            >
+              <Grid item xs={12}><Paper variant="outlined"><ChartWrapper
+                config={DashboardConfig.pareto_cfg}
+                width={100} height={50} /></Paper></Grid>
+              <Grid item xs={12}>
+                <Button onClick={() => setPage("play")}>Start simulation</Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Button onClick={() => setPage("about")}>About</Button>
+
+              </Grid>
+            </Grid>
+          </Container>
         </>}
         {page === "play" && <Dashboard />}
       </header>
