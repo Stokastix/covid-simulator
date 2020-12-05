@@ -43,6 +43,12 @@ const useStyles = makeStyles({
         maxWidth: 400,
         flexGrow: 1,
     },
+    addGraph: {
+        borderStyle: "dashed", height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center"
+    }
 });
 
 function nFormatter(num, digits) {
@@ -185,6 +191,8 @@ export default (props) => {
             width={100} height={50} />
     );
 
+    const classes = useStyles();
+
 
     return (
         <Container maxWidth="md">
@@ -269,14 +277,20 @@ export default (props) => {
                 )}
 
 
-                <Grid item xs={12}>
-                    <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={
-                        () => {
-                            setChartList(prev => [...prev, 1]);
+                <Grid item xs={6}>
+                    <Paper className={classes.addGraph}
+                        variant="outlined"
+                    >
+                        <Button variant="outlined" color="primary" href="#outlined-buttons" onClick={
+                            () => {
+                                setChartList(prev => [...prev, 1]);
+                            }
                         }
-                    }>
-                        Add Graph
+                            style={{ width: "50%", margin: "auto", border: "0px" }}
+                        >
+                            Add Graph
                     </Button>
+                    </Paper>
                 </Grid>
 
                 {!start &&
