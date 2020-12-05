@@ -38,6 +38,8 @@ import ChartSwitcher from "./ChartSwitcher"
 import PlayArrowSharpIcon from '@material-ui/icons/PlayArrowSharp';
 import { dbGetScores, dbUploadScore } from "./dbUtils"
 
+import LinearProgressWithLabel from "./LinearProgressWithLabel";
+
 const useStyles = makeStyles({
     root: {
         maxWidth: 400,
@@ -264,8 +266,8 @@ export default (props) => {
                     </MuiAlert>
                 </Snackbar>
                 <Grid item xs={12}>
-                    <Paper>
-                        <LinearProgress variant="determinate" value={progressRate} />
+                    <Paper variant="outlined">
+                        <LinearProgressWithLabel value={progressRate} />
                     </Paper>
                 </Grid>
 
