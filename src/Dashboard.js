@@ -40,6 +40,8 @@ import { dbGetScores, dbUploadScore } from "./dbUtils"
 
 import LinearProgressWithLabel from "./LinearProgressWithLabel";
 
+import AlertDialogSlide from "./AlertDialogSlide"
+
 const useStyles = makeStyles({
     root: {
         maxWidth: 400,
@@ -265,6 +267,8 @@ export default (props) => {
                         {quote}
                     </MuiAlert>
                 </Snackbar>
+                <AlertDialogSlide active={true} />
+
                 <Grid item xs={12}>
                     <Paper variant="outlined">
                         <LinearProgressWithLabel value={progressRate} />
@@ -304,7 +308,7 @@ export default (props) => {
                             startIcon={<PlayArrowSharpIcon />}
                             onClick={() => setStart(true)}
                         >
-                            Start Game
+                            Start the pandemic
                     </Button>
                     </Grid>
                 }{start &&
