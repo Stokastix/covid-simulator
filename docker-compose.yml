@@ -33,6 +33,15 @@ services:
     command: "npm run-script start"
     stdin_open: true
 
+  firebase:
+    image: "andreysenov/firebase-tools"
+    ports:
+      - "9005:9005"
+    volumes:
+      - ./:/home/node
+    command: "firebase init"
+    stdin_open: true
+
   ide:
     image: "theiaide/theia"
     volumes:

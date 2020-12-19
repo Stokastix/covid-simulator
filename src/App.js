@@ -17,6 +17,7 @@ import ChartWrapper from "./ChartWrapper";
 import DashboardConfig from "./DashboardConfig"
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import { dbGetScores } from "./dbUtils"
 
 
 function HideOnScroll(props) {
@@ -54,8 +55,21 @@ function HideAppBar(props) {
   );
 }
 
+
 function App() {
   const [page, setPage] = useState("index");
+
+  const [ParetoCfg, setParetoCfg] = useState(DashboardConfig.pareto_cfg);
+
+  useEffect(() => {
+
+    dbGetScores(dataset => {
+      var cfg = { ...ParetoCfg };
+      cfg.data.datasets[1].data = dataset;
+      setParetoCfg(cfg);
+    });
+  }, []);
+
 
   return (
     <div className="App">
@@ -68,7 +82,7 @@ function App() {
               spacing={3}
             >
               <Grid item xs={12}><Paper variant="outlined"><ChartWrapper
-                config={DashboardConfig.pareto_cfg}
+                config={ParetoCfg}
                 width={100} height={50} /></Paper></Grid>
               <Grid item xs={12}>
                 <Button onClick={() => setPage("play")}>Start simulation</Button>
@@ -80,7 +94,7 @@ function App() {
             </Grid>
           </Container>
         </>}
-        {page === "play" && <Dashboard />}
+        {page === "play" && <Dashboard setParetoCfg={setParetoCfg} ParetoCfg={ParetoCfg} />}
       </header>
     </div>
   );

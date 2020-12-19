@@ -88,7 +88,7 @@ export default (props) => {
     const [IGraphCfg, setIGraphCfg] = useState(DashboardConfig.infected_cfg);
     const [GDPGraphCfg, setGDPGraphCfg] = useState(DashboardConfig.gdp_cfg);
     const [R0GraphCfg, setR0GraphCfg] = useState(DashboardConfig.r0_cfg);
-    const [ParetoCfg, setParetoCfg] = useState(DashboardConfig.pareto_cfg);
+    const { ParetoCfg, setParetoCfg } = props;
     const [HospitalCfg, setHospitalCfg] = useState(DashboardConfig.hospital_cfg);
     const [DeathsGraphCfg, setDeathsGraphCfg] = useState(DashboardConfig.deaths_cfg);
 
@@ -125,14 +125,9 @@ export default (props) => {
         setOpen(false);
     };
 
+
     useEffect(() => {
         setOpen(true);
-
-        dbGetScores(dataset => {
-            var cfg = { ...ParetoCfg };
-            cfg.data.datasets[1].data = dataset;
-            setParetoCfg(cfg);
-        });
     }, []);
 
     useEffect(() => {

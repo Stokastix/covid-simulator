@@ -86,7 +86,7 @@ var pareto_cfg = {
         datasets: [{
             borderColor: "#b30000",
             backgroundColor: "#ff3333",
-            data: [{ x: 1., y: 0. }]
+            data: []
         },
         {
             data: [{ x: 50000., y: -8. }]
@@ -135,7 +135,7 @@ var pareto_cfg = {
                     labelString: "GDP"
                 },
                 ticks: {
-                    min: -20,
+                    min: -15,
                     max: 0.
                 }
             }]
